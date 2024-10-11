@@ -1,7 +1,7 @@
 const fs = require("fs").promises;
 const path = require("path");
 const process = require("process");
-const moment = require('moment')
+const moment = require("moment");
 const { authenticate } = require("@google-cloud/local-auth");
 const { google } = require("googleapis");
 
@@ -17,7 +17,7 @@ module.exports = {
   authorize,
   printEvents,
   listEvents,
-}
+};
 
 /**
  * Reads previously authorized credentials from the save file.
@@ -95,7 +95,8 @@ async function printEvents(auth) {
   return events
     .map((event, i) => {
       const start = event.start.dateTime || event.start.date;
-      console.log(`${start} - ${event.summary}`);
+      const loc = event.location;
+      console.log(`${start} - ${event.summary} - ${loc}`);
     })
     .join("\n");
 }
@@ -114,9 +115,21 @@ async function listEvents(auth) {
   if (!events || events.length === 0) {
     return [];
   }
-  return events.map(event => {
-    const startTime = moment(new Date(event.start.dateTime?? event.start.date));
-    const { summary } = event;
-    return `${startTime.format('LLL')} - ${summary}`
-  });
+  return events
+    .filter((event) => {
+      // Define my filter rules
+      const is_not_class = !event.summary.toLowerCase().includes("class");
+      const is_not_goon = !event.summary.toLowerCase().includes("goon");
+      // Add all the filter rules together with & so all must be true
+      return is_not_class && is_not_goon;
+    })
+    .map((event) => {
+      const startTime = moment(
+        new Date(event.start.dateTime ?? event.start.date)
+        
+      );
+      const loc = event.location
+      const { summary } = event;
+      return `${startTime.format("llll")} - ${summary} @ ${loc}`;
+    });
 }
