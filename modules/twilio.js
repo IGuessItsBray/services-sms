@@ -1,13 +1,10 @@
 require("dotenv").config();
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilloNumber = process.env.TWILIO_NUMBER;
-const recNumber = process.env.REC_NUMBER
+const { SID, TOKEN, FROM, TO } = require('../config.json');
+const client = require('twilio')(SID, TOKEN);
 
 module.exports = { sendMessage }
 
-function sendMessage(body, to = recNumber, from = twilloNumber) {
-    const client = require("twilio")(accountSid, authToken);
+function sendMessage(body, to = TO, from = FROM) {
     client.messages
         .create({ body, to, from })
         .then((message) => console.log(message.body))

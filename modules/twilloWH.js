@@ -1,14 +1,11 @@
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilloNumber = process.env.TWILIO_NUMBER;
-const recNumber = process.env.REC_NUMBER
-const client = require('twilio')(accountSid, authToken);
+const { SID, TOKEN, FROM } = require('../config.json');
+const client = require('twilio')(SID, TOKEN);
 
 module.exports = {
     sendSMS: (to, message) => {
         return client.messages.create({
             to,
-            from: twilloNumber,
+            from: FROM,
             body: message
         });
     }
